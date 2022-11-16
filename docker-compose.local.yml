@@ -1,0 +1,43 @@
+version: '3.4'
+
+services:
+  ts-swc-dev:
+    profiles:
+      - dev
+    build:
+      target: dev-built
+      context: .
+      args:
+        - SSH_KEY
+        - NPM_TOKEN
+    environment:
+      - NPM_TOKEN
+    env_file:
+      - .env.local
+    ports:
+      - '8080:8080'
+      - '9229:9229'
+    command: npm run start
+    volumes:
+      - node_modules:/app/node_modules
+      - built:/app/built
+      - .:/app
+
+  ## Uncomment the following lines to use postgres
+  # depends_on:
+  # - postgres
+
+  # postgres:
+  #     image: postgres:latest
+  #     restart: unless-stopped
+  #     volumes:
+  #         - postgres-data:/var/lib/postgresql/data
+  #     environment:
+  #         POSTGRES_PASSWORD: postgres
+  #         POSTGRES_USER: postgres
+  #         POSTGRES_DB: pgsql-database
+
+volumes:
+  built: null
+  node_modules: null
+  # postgres-data: null

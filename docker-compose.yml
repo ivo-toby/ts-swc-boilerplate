@@ -1,0 +1,44 @@
+version: '3.4'
+
+services:
+  ts-swc:
+    profiles:
+      - main
+    build: &build_config
+      context: .
+      target: ts-swc-built
+      args:
+        - SSH_KEY
+        - NPM_TOKEN
+   environment:
+      - NPM_TOKEN
+## Uncomment the following lines to use postgres
+    # depends_on:
+      # - postgres
+
+  # postgres:
+  #     image: postgres:latest
+  #     restart: unless-stopped
+  #     volumes:
+  #         - postgres-data:/var/lib/postgresql/data
+  #     environment:
+  #         POSTGRES_PASSWORD: postgres
+  #         POSTGRES_USER: postgres
+  #         POSTGRES_DB: pgsql-database
+
+
+test:
+    build:
+      <<: *build_config
+      target: test-base
+    ports:
+      - '3000:8000'
+    environment:
+      SSH_KEY:
+      NPM_TOKEN:
+    env_file:
+      - .env.test
+    volumes:
+      - /app/node_modules
+      - /app/built
+      - .:/app
